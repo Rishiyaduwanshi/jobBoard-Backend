@@ -1,10 +1,21 @@
 import express from "express";
 import { createJobHandler, getJobsHandler, applyJobHandler } from "../handlers/job.handler.js";
+import { protect, authorizeRoles } from '../middlewares/auth.mid.js';
 
 const router = express.Router();
 
-router.post("/create", createJobHandler);
-router.get("/list", getJobsHandler);
-router.post("/apply", applyJobHandler);
+router.post("/jobs", 
+    protect,
+    authorizeRoles('recruiter'), 
+    createJobHandler
+);
+
+router.get("/jobs", getJobsHandler);
+router.post(
+    "/apply",
+    protect,
+    authorizeRoles('applicant'),
+    applyJobHandler
+);
 
 export default router;

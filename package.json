@@ -11,7 +11,7 @@
     "pro": "node --env-file=.env server"
   },
   "keywords": [],
-  "author": "",
+  "author": "Abhinav Prakash",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^3.0.2",
@@ -26,5 +26,8 @@
     "morgan": "^1.10.0",
     "nodemailer": "^6.10.0",
     "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "prettier": "3.5.3"
   }
 }

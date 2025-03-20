@@ -4,13 +4,28 @@ import { AppError } from "../utils/AppError.js";
 
 export const createJobHandler = async (req, res, next) => {
   try {
-    const { title, description, salary, location } = req.body;
-    if (!title || !description || !salary || !location) {
+    const { title, description, company, location, salary, experience, type, requirements } = req.body;
+    
+    if (!title || !description || !company || !location || !salary || !experience || !type || !requirements) {
       throw new AppError({ message: "All fields are required", statusCode: 400 });
     }
 
-    const newJob = await Job.create({ title, description, salary, location, createdBy: req.user.userId });
-    appResponse(res, { message: "Job created successfully", data: newJob });
+    const newJob = await Job.create({
+      title,
+      description,
+      company,
+      location,
+      salary,
+      experience,
+      type,
+      requirements,
+      recruiter: req.user.userId,
+    });
+
+    appResponse(res, { 
+      message: "Job created successfully", 
+      data: newJob 
+    });
   } catch (error) {
     next(error);
   }

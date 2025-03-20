@@ -46,8 +46,11 @@ app.use(appLogger);
 
 // Routes
 import userRoute from './src/routes/auth.route.js';
+import jobRoute from './src/routes/job.route.js';
 
 app.use(`/api/v${version}`, userRoute);
+app.use(`/api/v${version}`, jobRoute);
+
 
 app.use((err, req, res, next) => {
   try {

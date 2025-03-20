@@ -1,19 +1,21 @@
 import jwt from "jsonwebtoken";
 import { AppError } from "../utils/AppError.js";
+import config from '../../config/config.js'; // Add missing config import
 
 export const protect = (req, res, next) => {
+  // Get token from either cookie or Authorization header
+  const token = req.cookies?.token || req.headers.authorization?.replace('Bearer ', '');
+  
+  if (!token) {
+    return next(new AppError({ message: "Not authorized", statusCode: 401 }));
+  }
+
   try {
-    const token = req.cookies.token;
-
-    if (!token) {
-      throw new AppError({ message: "Not authorized, token missing", statusCode: 401 });
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    const decoded = jwt.verify(token, config.JWT_SECRET);
+    req.user = { userId: decoded.userId, role: decoded.role };
     next();
   } catch (error) {
-    next(new AppError({ message: "Invalid token, authorization failed", statusCode: 401 }));
+    next(new AppError({ message: "Invalid token", statusCode: 401 }));
   }
 };
 
