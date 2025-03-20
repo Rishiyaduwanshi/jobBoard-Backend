@@ -1,0 +1,7 @@
+
+{
+    "ext": "js,json,ejs,html,css,mjs,cjs,.env,.dev.env",
+    "ignore": ["demo/**","nodemon.json,logs/**, node_modules/**"]
+  }
+  
+  
