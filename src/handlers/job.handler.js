@@ -2,7 +2,7 @@ import Job from "../models/job.model.js";
 import Application from "../models/application.model.js";
 import User from "../models/user.model.js";
 import appResponse from "../utils/appResponse.js";
-import { AppError } from "../utils/AppError.js";
+import { AppError } from "../utils/appError.js";
 
 export const createJobHandler = async (req, res, next) => {
   try {

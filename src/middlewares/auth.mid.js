@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { AppError } from "../utils/AppError.js";
+import { AppError } from "../utils/appError.js";
 import config from '../../config/config.js'; 
 
 export const protect = (req, res, next) => {
