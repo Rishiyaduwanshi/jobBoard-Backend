@@ -11,7 +11,6 @@ const JobSchema = new mongoose.Schema({
   status: { type: String, enum: ["pending", "approved"], default: "pending" },
   requirements: { type: [String], required: true },
   recruiter: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  applicants: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   applications: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: "Application"
