@@ -16,6 +16,6 @@ router.post('/signout', signoutHandler);
 // router.get('/profile', protect, getUserProfile);
 
 // Add this route
-router.get('/me', protect, checkAuthHandler);
+router.get('/auth/me', protect, checkAuthHandler);
 
 export default router;

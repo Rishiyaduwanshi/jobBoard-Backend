@@ -1,9 +1,8 @@
 import jwt from "jsonwebtoken";
 import { AppError } from "../utils/AppError.js";
-import config from '../../config/config.js'; // Add missing config import
+import config from '../../config/config.js'; 
 
 export const protect = (req, res, next) => {
-  // Get token from either cookie or Authorization header
   const token = req.cookies?.token || req.headers.authorization?.replace('Bearer ', '');
   
   if (!token) {
