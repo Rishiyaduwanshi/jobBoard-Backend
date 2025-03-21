@@ -77,6 +77,7 @@ export const getJobsHandler = async (req, res, next) => {
         description: job.description,
         company: job.company,
         location: job.location,
+        requirements: job.requirements,
         salary: job.salary,
         type: job.type,
         experience: job.experience
@@ -166,6 +167,7 @@ export const applyJobHandler = async (req, res, next) => {
   }
 };
 
+
 export const updateApplicationStatusHandler = async (req, res, next) => {
   try {
     const { applicationId, status } = req.body;
@@ -191,6 +193,34 @@ export const updateApplicationStatusHandler = async (req, res, next) => {
       data: updatedApp
     });
 
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+export const getApplicationsHandler = async (req, res, next) => {
+  try {
+    const { jobId, status } = req.query;
+    let query = { recruiter: req.user.userId };
+    
+    if (jobId) {
+      query.job = jobId;
+    }
+    
+    if (status && ['applied', 'reviewed', 'shortlisted', 'rejected'].includes(status)) {
+      query.status = status;
+    }
+
+    const applications = await Application.find(query)
+      .populate('job', 'title company location')
+      .populate('applicant', 'name email')
+      .sort({ createdAt: -1 });
+
+    appResponse(res, {
+      message: "Applications fetched successfully",
+      data: applications
+    });
   } catch (error) {
     next(error);
   }
