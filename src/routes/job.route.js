@@ -20,6 +20,22 @@ router.post(
     applyJobHandler
 );
 
+
+router.delete(
+    "/jobs/:jobId",
+    protect,
+    authorizeRoles('recruiter'),
+    deleteJobHandler
+)
+
+router.patch(
+    "/jobs/:jobId",
+    protect,
+    authorizeRoles('recruiter'),
+    updateJobHandler
+)
+
+
 router.get(
     "/applications",
     protect,

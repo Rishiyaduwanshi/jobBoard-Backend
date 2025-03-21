@@ -34,16 +34,16 @@ export const createJobHandler = async (req, res, next) => {
 };
 
 export const getJobsHandler = async (req, res, next) => {
-  try {   
-    const { id : jobId, applied } = req.query;
+  try {
+    const { id: jobId, applied } = req.query;
     let query = {};
     let populateOptions = [{ path: 'recruiter', select: 'name email' }];
     if (jobId) {
       query._id = jobId;
     } else if (req.user) {
       if (req.user.role === 'applicant' && applied === 'true') {
-        const applications = await Application.find({ 
-          applicant: req.user.userId 
+        const applications = await Application.find({
+          applicant: req.user.userId
         });
         query._id = { $in: applications.map(app => app.job) };
       } else if (req.user.role === 'recruiter') {
@@ -129,7 +129,7 @@ export const applyJobHandler = async (req, res, next) => {
       appResponse(res, {
         message: "Already applied to this job",
         statusCode: 400,
-        success : false
+        success: false
       });
       return;
     }
@@ -167,6 +167,53 @@ export const applyJobHandler = async (req, res, next) => {
   }
 };
 
+export const updateJobHandler = async (req, res, next) => {
+  try {
+    const { jobId } = req.params;
+    const updateData = req.body;
+
+    if (Object.keys(updateData).length === 0) {
+      return next(new AppError({ message: "At least one field is required to update", statusCode: 400 }));
+    }
+
+    const updateJob = await Job.findByIdAndUpdate(jobId, updateData, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!updateJob) {
+      return next(new AppError({ message: "Job not found", statusCode: 404 }));
+    }
+
+    appResponse(res, {
+      message: "Job updated successfully",
+      data: updateJob,
+      statusCode: 200,
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+export const deleteJobHandler = async (req, res, next) => {
+  try {
+    const { jobId } = req.params;
+    const deletedJob = await Job.findByIdAndDelete(jobId);
+    if (!deletedJob) {
+      return next(new AppError({ message: "Job not found ", statusCode: 404 }));
+    }
+
+    appResponse(res, {
+      message: "Job deleted successfully",
+      statusCode: 200
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const updateApplicationStatusHandler = async (req, res, next) => {
   try {
@@ -203,11 +250,11 @@ export const getApplicationsHandler = async (req, res, next) => {
   try {
     const { jobId, status } = req.query;
     let query = { recruiter: req.user.userId };
-    
+
     if (jobId) {
       query.job = jobId;
     }
-    
+
     if (status && ['applied', 'reviewed', 'shortlisted', 'rejected'].includes(status)) {
       query.status = status;
     }
