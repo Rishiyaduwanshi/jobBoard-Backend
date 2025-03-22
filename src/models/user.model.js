@@ -7,6 +7,35 @@ const UserSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     role: { type: String, enum: ['recruiter', 'applicant'], required: true },
+    applications: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Application' }],
+    
+    phone: { type: String },
+    bio: { type: String },
+
+    // Applicant specific fields
+    skills: [{ type: String }],
+    education: [{
+      institution: { type: String },
+      degree: { type: String },
+      field: { type: String },
+      startYear: { type: Number },
+      endYear: { type: Number }
+    }],
+    workExperience: [{
+      company: { type: String },
+      position: { type: String },
+      description: { type: String },
+      startDate: { type: Date },
+      endDate: { type: Date },
+      current: { type: Boolean, default: false }
+    }],
+    resume: { type: String }, 
+    
+    // Recruiter specific fields
+    companyName: { type: String },
+    companyWebsite: { type: String },
+    companyDescription: { type: String },
+    companyLogo: { type: String } 
   },
   { timestamps: true }
 );
