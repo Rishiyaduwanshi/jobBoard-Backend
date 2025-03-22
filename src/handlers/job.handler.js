@@ -3,6 +3,7 @@ import Application from "../models/application.model.js";
 import User from "../models/user.model.js";
 import appResponse from "../utils/appResponse.js";
 import { AppError } from "../utils/appError.js";
+import mongoose from 'mongoose';
 
 export const createJobHandler = async (req, res, next) => {
   try {
@@ -290,29 +291,59 @@ export const updateApplicationStatusHandler = async (req, res, next) => {
 };
 
 
-export const getApplicationsHandler = async (req, res, next) => {
+export const getJobApplicationsHandler = async (req, res, next) => {
   try {
-    const { jobId, status } = req.query;
-    let query = { recruiter: req.user.userId };
-
-    if (jobId) {
-      query.job = jobId;
+    const { jobId } = req.params;
+    
+    const job = await Job.findById(jobId);
+    if (!job) {
+      throw new AppError({ message: "Job not found", statusCode: 404 });
     }
 
-    if (status && ['applied', 'reviewed', 'shortlisted', 'rejected'].includes(status)) {
-      query.status = status;
+    if (!job.recruiter.equals(req.user.userId)) {
+      throw new AppError({ message: "Unauthorized access", statusCode: 403 });
     }
 
-    const applications = await Application.find(query)
-      .populate('job', 'title company location')
-      .populate('applicant', 'name email')
-      .sort({ createdAt: -1 });
+    const applications = await Application.find({ job: new mongoose.Types.ObjectId(jobId) })
+      .populate({
+        path: 'applicant',
+        select: 'name email phone skills education workExperience resume -_id',
+        transform: doc => ({
+          name: doc?.name,
+          contact: doc?.email,
+          phone: doc?.phone,
+          skills: doc?.skills,
+          education: doc?.education,
+          experience: doc?.workExperience,
+          resume: doc?.resume
+        })
+      });
+
+    if (applications.length === 0) {
+      return appResponse(res, {
+        message: "No applications found for this job",
+        data: []
+      });
+    }
 
     appResponse(res, {
       message: "Applications fetched successfully",
-      data: applications
+      data: applications.map(app => ({
+        applicationId: app._id,
+        status: app.status,
+        appliedDate: app.createdAt,
+        applicantProfile: app.applicant,
+        jobDetails: {
+          title: job.title,
+          company: job.company,
+          location: job.location
+        }
+      }))
     });
   } catch (error) {
     next(error);
   }
+};
+
+export const getApplicationsHandler = async (req, res, next) => {
 };

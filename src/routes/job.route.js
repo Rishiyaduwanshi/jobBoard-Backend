@@ -1,5 +1,16 @@
 import express from "express";
-import { createJobHandler, getJobsHandler, applyJobHandler, updateApplicationStatusHandler, getApplicationsHandler, deleteJobHandler, updateJobHandler } from "../handlers/job.handler.js";
+import { 
+  createJobHandler, 
+  getJobsHandler, 
+  applyJobHandler, 
+  updateApplicationStatusHandler, 
+  getJobApplicationsHandler,  
+  deleteJobHandler, 
+  updateJobHandler,
+  getApplicationsHandler
+} from "../handlers/job.handler.js";
+
+
 import { protect, authorizeRoles } from '../middlewares/auth.mid.js';
 import getIdAndRole from "../middlewares/getIdAndRole.mid.js";
 
@@ -48,6 +59,13 @@ router.patch(
     protect,
     authorizeRoles('recruiter'),
     updateApplicationStatusHandler
+);
+
+router.get(
+    "/jobs/:jobId/applications",
+    protect,
+    authorizeRoles('recruiter'),
+    getJobApplicationsHandler
 );
 
 export default router;

@@ -52,7 +52,7 @@ export const signinHandler = async (req, res, next) => {
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'None',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : '',
     });
 
     appResponse(res, { message: 'Signin successful', data: { _id: user._id, name: user.name, email: user.email, role: user.role, token} });
