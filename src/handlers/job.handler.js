@@ -35,27 +35,71 @@ export const createJobHandler = async (req, res, next) => {
 
 export const getJobsHandler = async (req, res, next) => {
   try {
-    const { id: jobId, applied } = req.query;
+    const { id: jobId, applied, location, type, salary, experience } = req.query;
     let query = {};
     let populateOptions = [{ path: 'recruiter', select: 'name email' }];
+
     if (jobId) {
       query._id = jobId;
-    } else if (req.user) {
-      if (req.user.role === 'applicant' && applied === 'true') {
-        const applications = await Application.find({
-          applicant: req.user.userId
-        });
-        query._id = { $in: applications.map(app => app.job) };
-      } else if (req.user.role === 'recruiter') {
-        query.recruiter = req.user.userId;
-        populateOptions = [{
-          path: 'applications',
-          select: 'status createdAt',
-          populate: {
-            path: 'applicant',
-            select: 'name email'
-          }
-        }];
+    } else {
+      if (location) {
+        query.location = { $regex: location, $options: 'i' };
+      }
+
+      if (type) {
+        const typeMap = {
+          'full-time': 'Full-time',
+          'part-time': 'Part-time',
+          'contract': 'Contract',
+          'internship': 'Internship'
+        };
+        query.type = typeMap[type] || type;
+      }
+
+      if (salary) { 
+        if (salary === '0-50000') {
+          // Handle only ₹ format
+          query.salary = { $regex: /₹0|₹[1-4]\d{1,4}|₹50,000/, $options: 'i' };
+        } else if (salary === '50000-100000') {
+          query.salary = { $regex: /₹5\d{1,4}|₹[6-9]\d{1,4}|₹100,000/, $options: 'i' };
+        } else if (salary === '100000+') {
+          query.salary = { $regex: /₹1\d{5,}|₹[2-9]\d{5,}/, $options: 'i' };
+        } else {
+          query.salary = { $regex: salary, $options: 'i' };
+        }
+      }
+
+      if (experience) {
+        const expMap = {
+          'entry': 'Entry Level|0-2 years|Junior|1\\+ years|2\\+ years',
+          'mid': 'Mid Level|2-5 years|3-5 years|3\\+ years|4\\+ years|5\\+ years',
+          'senior': 'Senior Level|5\\+ years|6\\+ years|7\\+ years|8\\+ years|10\\+ years'
+        };
+
+        if (expMap[experience]) {
+          query.experience = { $regex: expMap[experience], $options: 'i' };
+        } else {
+          query.experience = { $regex: experience, $options: 'i' };
+        }
+      }
+
+      if (req.user) {
+        if (req.user.role === 'applicant' && applied === 'true') {
+          const applications = await Application.find({
+            applicant: req.user.userId
+          });
+          query._id = { $in: applications.map(app => app.job) };
+        } else if (req.user.role === 'recruiter') {
+          query.recruiter = req.user.userId;
+          populateOptions = [{
+            path: 'applications',
+            select: 'status createdAt',
+            populate: {
+              path: 'applicant',
+              select: 'name email'
+            }
+          }];
+        }
       }
     }
 
