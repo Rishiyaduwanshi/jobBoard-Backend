@@ -345,5 +345,75 @@ export const getJobApplicationsHandler = async (req, res, next) => {
   }
 };
 
-export const getApplicationsHandler = async (req, res, next) => {
+export const getApplicantApplicationsHandler = async (req, res, next) => {
+  try {
+    const { userId} = req.user;
+    const applicantApplications = await Application.find({applicant: userId})
+    .populate('job', "title company location salary type")
+    .select('status createdAt')
+    .lean()
+    appResponse(res, {
+      message: "Applications fetched successfully",
+      data: applicantApplications
+    });
+    
+  } catch (error) {
+  next(error);  
+  }
 };
+
+
+
+
+const job =         {
+  "_id": "67de02eca96cd78551531e3e",
+  "job": {
+      "_id": "67de01efbe326481839ad414",
+      "title": "UI/UX Designer",
+      "description": "We need a creative UI/UX Designer to design engaging user experiences. You will work closely with developers and product teams to enhance the usability and aesthetics of our applications.",
+      "company": "Design Lab",
+      "location": "Gurgaon, IN", 
+      "salary": "₹70,000 - ₹1,20,000",
+      "experience": "2+ years",
+      "type": "Full-time",
+      "requirements": [
+          "2+ years of experience in UI/UX design",
+          "Proficiency in Figma, Adobe XD, and Sketch",
+          "Strong knowledge of user psychology and behavior",
+          "Experience with responsive and adaptive design",
+          "Ability to create wireframes and prototypes"
+      ],
+      "recruiter": "67dbd5767ba6287dd2f2b494",
+      "applications": [
+          "67de02eca96cd78551531e3e"
+      ],
+      "createdAt": "2025-03-22T00:18:55.367Z",
+      "updatedAt": "2025-03-22T00:23:08.154Z",
+      "__v": 0
+  },
+  "applicant": "67dbe6992ef69cb34f9693cf",
+  "status": "shortlisted",
+  "recruiter": {
+      "applications": [],
+      "_id": "67dbd5767ba6287dd2f2b494",
+      "name": "Abhinav Prakash",
+      "email": "abp@mail.com",
+      "password": "$2b$10$PNNUddWRduiYhiqby4fPF.l5.XZX3Al4QsyVYik0V9xSPGXsRLy2y",
+      "role": "recruiter",
+      "createdAt": "2025-03-20T08:44:38.809Z",
+      "updatedAt": "2025-03-25T23:41:59.230Z",
+      "__v": 0,
+      "bio": "A full-stack developer with a passion for building dynamic and efficient web applications. Skilled in JavaScript, Node.js, Express.js, and MongoDB, I focus on creating scalable backend solutions. I’m also experienced in Linux environments and AWS cloud services, which help me deploy and manage applications with ease. With a background in WordPress development and intermediate knowledge of Java, I’m always looking to expand my skill set. Driven by a love for innovation, my goal is to solve real-world problems with creative and reliable tech solutions.\n\nIn addition to my expertise in full-stack development, I also have experience with MS Word and Excel, which I utilize for documentation, data analysis, and reporting, ensuring organized and efficient workflows in my projects. ",
+      "companyDescription": "We aim to provide website development solution to companies and clients",
+      "companyName": "Job Board",
+      "companyWebsite": "https://rishiyaduwanshi.me",
+      "education": [],
+      "phone": "9876543210",
+      "resume": "",
+      "skills": [],
+      "workExperience": []
+  },
+  "createdAt": "2025-03-22T00:23:08.131Z",
+  "updatedAt": "2025-03-22T12:33:44.447Z",
+  "__v": 0
+}

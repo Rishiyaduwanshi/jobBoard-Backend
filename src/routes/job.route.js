@@ -7,7 +7,7 @@ import {
   getJobApplicationsHandler,  
   deleteJobHandler, 
   updateJobHandler,
-  getApplicationsHandler
+  getApplicantApplicationsHandler
 } from "../handlers/job.handler.js";
 
 
@@ -48,10 +48,10 @@ router.patch(
 
 
 router.get(
-    "/applications",
+    "/applicant/applications",
     protect,
-    authorizeRoles('recruiter'),
-    getApplicationsHandler
+    authorizeRoles('applicant'),
+    getApplicantApplicationsHandler
 );
 
 router.patch(
