@@ -3,7 +3,7 @@
 A robust backend API for a job board application where recruiters can post jobs and applicants can apply for them.  
 
 - **Frontend:** [Job Board Client](https://jobboard-cts.pages.dev)  
-- **Backend:** [Job Board Server](https://job-board-w9i4v.ondigitalocean.app/)  
+- **Backend:** [Job Board Server](https://job-board-s7zgm.ondigitalocean.app/)  
 
 ## **🌟 Features**  
 
